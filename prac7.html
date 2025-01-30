@@ -1,0 +1,109 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Guess the Number Game</title>
+  <style>
+    body {
+      font-family: Arial, sans-serif;
+      text-align: center;
+      padding: 20px;
+    }
+    .hidden {
+      display: none;
+    }
+    input, button {
+      padding: 10px;
+      font-size: 16px;
+      margin: 10px;
+    }
+    #feedback {
+      font-size: 20px;
+      font-weight: bold;
+      margin-top: 20px;
+    }
+    #guessHistory {
+      font-size: 14px;
+      margin-top: 10px;
+      color: gray;
+    }
+  </style>
+</head>
+<body>
+
+<h1>Guess the Number Game</h1>
+<p>I'm thinking of a number between 1 and 100. Can you guess it in 10 tries?</p>
+
+<div id="game">
+  <label for="guessInput">Enter your guess:</label>
+  <input type="number" id="guessInput" min="1" max="100">
+  <button onclick="makeGuess()">Guess</button>
+
+  <p id="feedback"></p>
+  <p id="guessHistory" class="hidden">Previous guesses: </p>
+
+  <div id="gameOver" class="hidden">
+    <p>Game Over! Do you want to play again?</p>
+    <button onclick="startNewGame()">Play Again</button>
+  </div>
+</div>
+
+<script>
+  let secretNumber;
+  let remainingTurns;
+  let guessedNumbers = [];
+
+  function startNewGame() {
+    secretNumber = Math.floor(Math.random() * 100) + 1;
+    remainingTurns = 10;
+    guessedNumbers = [];
+    document.getElementById('gameOver').classList.add('hidden');
+    document.getElementById('guessHistory').classList.add('hidden');
+    document.getElementById('feedback').textContent = '';
+    document.getElementById('guessInput').value = '';
+    document.getElementById('guessInput').disabled = false;
+    document.getElementById('guessInput').focus();
+  }
+
+  function makeGuess() {
+    let guess = parseInt(document.getElementById('guessInput').value);
+    
+    if (isNaN(guess) || guess < 1 || guess > 100) {
+      alert("Please enter a valid number between 1 and 100.");
+      return;
+    }
+
+    guessedNumbers.push(guess);
+    remainingTurns--;
+
+    if (guess === secretNumber) {
+      document.getElementById('feedback').textContent = `Congratulations! You guessed the number ${secretNumber}!`;
+      endGame();
+    } else if (remainingTurns === 0) {
+      document.getElementById('feedback').textContent = `Game Over! The number was ${secretNumber}.`;
+      endGame();
+    } else {
+      let hint = guess < secretNumber ? 'too low' : 'too high';
+      document.getElementById('feedback').textContent = `Wrong! Your guess was ${hint}. You have ${remainingTurns} turns left.`;
+    }
+
+    updateGuessHistory();
+  }
+
+  function updateGuessHistory() {
+    document.getElementById('guessHistory').classList.remove('hidden');
+    document.getElementById('guessHistory').textContent = `Previous guesses: ${guessedNumbers.join(', ')}`;
+  }
+
+  function endGame() {
+    document.getElementById('guessInput').disabled = true;
+    document.getElementById('gameOver').classList.remove('hidden');
+  }
+
+  // Start the game when the page loads
+  window.onload = startNewGame;
+</script>
+
+</body>
+</html>
